@@ -30,51 +30,50 @@ content = Blueprint('content', __name__)
 
 ADMINS = os.getenv('ADMINS', '').split(',')
 
-github_blueprint = make_github_blueprint(
-    client_id=os.getenv('GITHUB_OAUTH_CLIENT_ID'),
-    client_secret=os.getenv('GITHUB_OAUTH_CLIENT_SECRET'),
-    scope='user',
-    # redirect_to='content.github_callback',
-    redirect_url="/github_callback",
-    storage=SessionStorage()
-)
-content.register_blueprint(github_blueprint, url_prefix='/github_login')
+# github_blueprint = make_github_blueprint(
+#     client_id=os.getenv('GITHUB_OAUTH_CLIENT_ID'),
+#     client_secret=os.getenv('GITHUB_OAUTH_CLIENT_SECRET'),
+#     scope='user',
+#     redirect_url="/github_callback",
+#     storage=SessionStorage()
+# 
+# content.register_blueprint(github_blueprint, url_prefix='/github_login')
 
 @content.route('/content/block1')
 def block1():
-  return render_template('block1.html')
+    return render_template('block1.html')
 
 @content.route('/content/block2')
 def block2():
-  return render_template('block2.html')
+    return render_template('block2.html')
 
 @content.route('/content/block3')
 def block3():
-  return render_template('block3.html')
+    return render_template('block3.html')
 
 @content.route('/content/block4')
 def block4():
-  return render_template('block4.html')
+    return render_template('block4.html')
 
 @content.route('/content/block5')
 def block5():
-  return render_template('block5.html')
+    return render_template('block5.html')
 
 @content.route('/content/block6')
 def block6():
-  return render_template('block6.html')
+    return render_template('block6.html')
 
 @content.route('/content/block7')
 def block7():
-  return render_template('block7.html')
+    return render_template('block7.html')
 
 @content.route('/content/block8')
 def block8():
-  return render_template('block8.html')
+    return render_template('block8.html')
 
 @content.route('/content/block9')
 def block9():
-  return render_template('block9.html')
+    return render_template('block9.html')
 
 @content.route('/content/tiles/')
 def tiles():
@@ -98,23 +97,23 @@ def resources(selected_age):
 
 @content.route('/content/Login/')
 def login():
-  return render_template('LoginPage.html')
+    return render_template('LoginPage.html')
 
 @content.route('/content/calendar/')
 def calendar():
-  return render_template('calendar.html')
+    return render_template('calendar.html')
 
 @content.route('/content/Contact/')
 def contact():
-  return render_template('ContactPage.html')
+    return render_template('ContactPage.html')
 
 @content.route('/content/Shop/')
 def shop():
-  return render_template('Shop.html')
+    return render_template('Shop.html')
 
 @content.route('/content/Cart/')
 def cart():
-  return render_template('Cart.html')
+    return render_template('Cart.html')
 
 @content.route('/create_post', methods=['POST'])
 def create_post_route():
@@ -136,127 +135,40 @@ def create_post_route():
 # @content.route('/github_login')
 # def github_login():
 #     if not github.authorized:
-#         print("Client ID:", os.getenv('GITHUB_OAUTH_CLIENT_ID'))
-#         print("Client Secret:", os.getenv('GITHUB_OAUTH_CLIENT_SECRET'))
-#         auth_url, _ = github.authorization_url("https://github.com/login/oauth/authorize")
-#         print("Redirecting to GitHub:",auth_url)
-#         return redirect(auth_url)
-#     #content.github_login
-#     else:
-#        account_info = github.get('/user')
-#        if account_info.ok:
-#           account_info_json = account_info.json()
-#           return f'<h1>Your GitHub name is {account_info_json["login"]}</h1>'
-#     return'<h1>Request failed!<h1>'
+#         return redirect(url_for("github.login"))  # this triggers OAuth flow
 
-@content.route("/github_login")
-def login_github():
-    if not github.authorized:
-        return redirect(url_for("github.login"))  # this triggers OAuth flow
+#     resp = github.get("/user")
+#     if not resp.ok:
+#         flash("Failed to fetch user info.", "error")
+#         return redirect(url_for("content.login"))
 
-    resp = github.get("/user")
-    if not resp.ok:
-        flash("Failed to fetch user info.", "error")
-        return redirect(url_for("content.login"))
+#     username = resp.json()["login"]
+#     session["user"] = username
+#     flash(f"Logged in as {username}", "success")
 
-    username = resp.json()["login"]
-    session["user"] = username
-    flash(f"Logged in as {username}", "success")
+#     if username in ADMINS:
+#         return redirect(url_for("content.admin_dashboard"))
 
-    if username in ADMINS:
-        return redirect(url_for("content.admin_dashboard"))
+#     return redirect(url_for("content.index"))
 
-    return redirect(url_for("content.index"))
+# @content.route("/github_test")
+# def github_test():
+#     print("Authorized:", github.authorized)
+#     print("Token:", github.token)
+#     return "Check terminal"
 
-@content.route("/github_test")
-def github_test():
-    print("Authorized:", github.authorized)
-    print("Token:", github.token)
-    return "Check terminal"
+# @content.route('/admin')
+# def admin_dashboard():
+#     if 'user' not in session or session['user'] not in ADMINS:
+#         return "Unauthorized", 403
+#     return render_template('admin_dashboard.html')
 
-# @content.route('/github_callback')
-# def github_callback():
-    # print("🔄 OAuth callback triggered!")
-    # print("📂 Request Args:", request.args)
-
-    # if 'code' not in request.args:
-    #     print("❌ No 'code' in request.")
-    #     flash("Authorization failed. No code received.", "error")
-    #     return redirect(url_for('content.login'))
-
-    # auth_code = request.args['code']
-    
-    # try:
-    #     print("🔄 Exchanging code for token...")
-        
-    #     # Manually exchange the code for a token
-    #     url = "https://github.com/login/oauth/access_token"
-    #     data = {
-    #         "client_id": os.getenv("GITHUB_CLIENT_ID"),
-    #         "client_secret": os.getenv("GITHUB_CLIENT_SECRET"),
-    #         "code": auth_code,
-    #         "redirect_uri": "http://127.0.0.1:5000/github_callback",
-    #     }
-    #     headers = {"Accept": "application/json"}
-
-    #     response = requests.post(url, json=data, headers=headers)
-    #     print("🔄 GitHub Token Exchange Response:", response.text)  # Debug
-
-    #     token_data = response.json()
-        
-    #     if "access_token" not in token_data:
-    #         print("❌ No access_token in response:", token_data)
-    #         flash("Authorization failed. No token received.", "error")
-    #         return redirect(url_for('content.login'))
-
-    #     session['github_token'] = token_data["access_token"]
-    #     print("🟢 Session updated with token:", session['github_token'])
-
-    # except Exception as e:
-    #     print("❌ Error during token exchange:", e)
-    #     flash("Authorization failed. Token exchange error.", "error")
-    #     return redirect(url_for('content.login'))
-
-    # return redirect(url_for('content.index'))
-    # print("Callback triggered!")  # Debug print
-    # print("Session Data:", session) 
-    
-
-    # print("GitHub Token:", session.get("github_oauth_token"))
-    # print(github.authorized)
-    # if not github.authorized:
-    #    print("Failed")
-    #    flash("Authorizatiion failed.", "error")
-    #    return redirect(url_for('content.login'))
-    
-    # account_info = github.get('/user')
-    # if account_info.ok:
-    #    account_info_json = account_info.json()
-    #    username = account_info_json['login']
-    #    print(f"Logged in as {username}") 
-
-    #    session['user'] = username
-    #    flash(f"Logged in as {username}" , "success")
-
-    #    if username in ADMINS:
-    #       return redirect(url_for('content.admin_dashboard'))
-       
-    #    return redirect(url_for('content.index'))
-    # flash("Failed to fetch user info.", "error")
-    # return redirect(url_for('content.index'))
-
-@content.route('/admin')
-def admin_dashboard():
-    if 'user' not in session or session['user'] not in ADMINS:
-       return "Unauthorized", 403
-    return render_template('admin_dashboard.html')
-
-@content.route('/logout')
-def logout():
-    session.pop('user', None)
-    github.logout()
-    flash("You have been logged out.", "success")
-    return redirect(url_for('content.index'))
+# @content.route('/logout')
+# def logout():
+#     session.pop('user', None)
+#     session.pop('flask_dance_token', None)  # Clear the OAuth token
+#     flash("You have been logged out.", "success")
+#     return redirect(url_for('content.index'))
 
 @content.route('/')
 def index():
