@@ -20,138 +20,81 @@
 -->
 
 <div class="popup-overlay d-flex justify-content-center align-items-center" id="age-popup">
-  <div class="popup-content text-center">
-    <span class="popup-close" id="popup-close">&times;</span>
-    <h2>Resource Directions</h2>
-    <p>What age is you child?</p>
-    <select id="age-dropdown" class="form-select mt-3" aria-label="Select child's age">
-      <option value="" disabled selected>Select an age</option>
-      <option value="under-1">Under 18 Months</option>
-      <option value="1">1 (Over 18 Months)</option>
-      <option value="2">2</option>
-      <option value="3">3</option>
-      <option value="4">4</option>
-      <option value="5">5</option>
-      <option value="6">6</option>
-      <option value="7">7</option>
-      <option value="8">8</option>
-      <option value="9">9</option>
-      <option value="10">10</option>
-      <option value="11">11</option>
-      <option value="12">12</option>
-      <option value="13">13</option>
-      <option value="14">14</option>
-      <option value="15">15</option>
-      <option value="16">16</option>
-      <option value="17">17</option>
-      <option value="18">18</option>
-    </select>
-    <button id="proceed-button" class="btn btn-primary mt-3">Enter</button>
-    <button id="cancel-button" class="btn btn-secondary mt-3">I am a teacher/school administrator.</button>
-  </div>
+<div class="popup-content text-center">
+<span class="popup-close" id="popup-close">&times;</span>
+<h2>Resource Directions</h2>
+<p>Which stage best describes your child’s age?</p>
+<select id="age-dropdown" class="form-select mt-3" aria-label="Select child's age group">
+<option value="" disabled selected>Select a stage</option>
+<option value="birth-18m">🌱 Birth – 18 Months</option>
+<option value="18m-3y">🧩 18 Months – 3 Years Old</option>
+<option value="3-6">🎨 3 – 6 Years Old</option>
+<option value="6-9">🔍 6 – 9 Years Old</option>
+<option value="9-12">🌍 9 – 12 Years Old</option>
+<option value="12-15">💡 12 – 15 Years Old</option>
+<option value="15-18">🌟 15 – 18 Years Old</option>
+</select>
+<button id="proceed-button" class="btn btn-primary mt-3">Enter</button>
+<button id="cancel-button" class="btn btn-secondary mt-3">I am a teacher/school administrator.</button>
+</div>
 </div>
 
-<script>
-  // Function to save selected age to sessionStorage
-  function saveSelectedAge() {
-    var selectedAgeSession = document.getElementById('age-dropdown').value;
-    sessionStorage.setItem('selected_age', selectedAgeSession); // Store in sessionStorage
-  }
-</script>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const popup = document.getElementById("age-popup");
-      const proceedButton = document.getElementById("proceed-button");
-      const closeButton = document.getElementById("popup-close");
-      const cancelButton = document.getElementById("cancel-button");
-      const ageDropdown = document.getElementById("age-dropdown");
-
-      const popupShown = sessionStorage.getItem("popupShown");
-      const selectedAge = sessionStorage.getItem('selected_age');
+document.addEventListener("DOMContentLoaded", function() {
+const popup = document.getElementById("age-popup");
+const proceedButton = document.getElementById("proceed-button");
+const closeButton = document.getElementById("popup-close");
+const cancelButton = document.getElementById("cancel-button");
+const ageDropdown = document.getElementById("age-dropdown");
 
 
-      if (!popupShown && popup) {
-        console.log("Pop-up element found.");  // Debugging log
-        popup.style.display = "flex"; // Show the pop-up
-        sessionStorage.setItem("popupShown", "true"); // Mark as shown
-      } else {
-        popup.classList.add("hidden");
-        console.error("Pop-up element not found!"); // Debugging message
-      }
+const popupShown = sessionStorage.getItem("popupShown");
+const selectedAge = sessionStorage.getItem('selected_age');
 
-      window.closePopup = function () {
-        /*
-        popup.style.display = "none"; // Hide the pop-up
-        console.log("Pop-up closed");
-        popup.classList.add("hidden");
-        console.log(`Proceeding with age: 19`);
-        window.location.href = `content/`; // Example URL structure
-        */
-       
-        const popup = document.getElementById("age-popup"); // Ensure popup is defined here
-        if (popup) {
-          popup.style.display = "none"; // Hide the pop-up
-          popup.classList.add("hidden");
-          console.log("Pop-up closed");
-        } else {
-          console.error("Pop-up element not found when closing!");
-        }
-        
-      };
 
-      window.proceed = function () {
-        console.log(popup);
-        popup.style.display = "none"; // Hide the pop-up
-        popup.classList.add("hidden");
-        console.log("Proceeding...");
-        const selectedAge = document.getElementById('age-dropdown').value;
-        if (selectedAge) {
-          console.log(`Proceeding with age: ${selectedAge}`);
-          // Redirect based on the selected age
-          window.location.href = `content/resources/${selectedAge}`; // Example URL structure
-        } else {
-          //alert("Please select an age.");
-          selectedAge = 'under-1';
-        }
-      };
+if (!popupShown && popup) {
+popup.style.display = "flex";
+sessionStorage.setItem("popupShown", "true");
+} else {
+popup.classList.add("hidden");
+}
 
-      // Add event listeners for buttons
-      if (proceedButton) {
-        proceedButton.addEventListener("click", window.proceed);
 
-        if (selectedAge) {
-        // Redirect to the appropriate resource based on the selected age
-          let redirectUrl = '/resources/' + selectedAge;
-          window.location.href = redirectUrl;
-          } else {
-            //alert("Please select an age first.");
-          }
+window.closePopup = function () {
+if (popup) {
+popup.style.display = "none";
+popup.classList.add("hidden");
+}
+};
 
-      }
 
-      if (closeButton) {
-        console.log("Close button found!");
-        closeButton.addEventListener("click", window.closePopup);
-      } else {
-        console.error("Close button not found!");
-      }
+window.proceed = function () {
+popup.style.display = "none";
+popup.classList.add("hidden");
+const selectedAge = document.getElementById('age-dropdown').value;
+if (selectedAge) {
+sessionStorage.setItem('selected_age', selectedAge);
+window.location.href = `content/resources/${selectedAge}`;
+}
+};
 
-      if (cancelButton) {
-        cancelButton.addEventListener("click", window.closePopup);
-      } else {
-        console.error("Cancel button not found!");
-      }
 
-      // Check if age is already saved in sessionStorage when the page loads
-    //const selectedAge = sessionStorage.getItem('selected_age');
-    if (selectedAge) {
-      console.log("Selected age from sessionStorage:", selectedAge);
-      // If age is already stored, redirect to the corresponding resource page
-      window.location.href = `/content/resources/${selectedAge}`;
-    }
+if (proceedButton) {
+proceedButton.addEventListener("click", window.proceed);
+}
+if (closeButton) {
+closeButton.addEventListener("click", window.closePopup);
+}
+if (cancelButton) {
+cancelButton.addEventListener("click", window.closePopup);
+}
 
-    });
+
+if (selectedAge) {
+window.location.href = `/content/resources/${selectedAge}`;
+}
+});
 </script>
 
 
