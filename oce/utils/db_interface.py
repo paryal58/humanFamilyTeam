@@ -12,6 +12,8 @@ from flask import current_app, g
 
 from .. import password_hasher
 from .models import Comment, Post, User
+from datetime import datetime
+import pytz
 
 DatabaseRow: TypeAlias = dict[str, Any]
 
@@ -72,6 +74,8 @@ def create_user(
         with open(Path(current_app.static_folder) / 'images' / '__DEFAULT.jpg', 'rb') as fp:
             profile_pic = fp.read()
 
+    eastern = pytz.timezone('US/Eastern')
+    now_est = datetime.now(eastern).isoformat()
     new_user_data = (
         str(create_uuid()),
         username,
@@ -79,10 +83,11 @@ def create_user(
         password_hasher.hash(password),
         profile_pic,
         about_me,
+        now_est  # UTC timestamp
     )
 
     cur.execute(
-        'INSERT INTO USERS VALUES(?, ?, ?, ?, ?, ?);',
+        'INSERT INTO USERS VALUES(?, ?, ?, ?, ?, ?, ?);',
         new_user_data,
     )
     con.commit()
@@ -122,6 +127,15 @@ def get_user_by_email(email: str) -> DatabaseRow | None:
     datum: DatabaseRow = cur.execute(
         'SELECT * FROM USERS WHERE email = ?;',
         (email,),
+    ).fetchone()
+    return datum
+
+def get_user_by_username(username: str) -> DatabaseRow | None:
+    con = get_db()
+    cur = con.cursor()
+    datum: DatabaseRow = cur.execute(
+        'SELECT * FROM USERS WHERE username = ?;',
+        (username,)
     ).fetchone()
     return datum
 

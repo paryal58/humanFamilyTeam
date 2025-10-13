@@ -31,7 +31,7 @@
         <button id="clear-cart" class="clear-cart-button">Clear Cart</button>
     </div>
   <!-- Contact Form -->
-  <form
+  <!--<form
     class="cart-form"
     action="https://api.web3forms.com/submit"
     method="POST"
@@ -51,8 +51,9 @@
       name="from_name"
       value="My Website"
     />
-
+    -->
     <!-- JavaScript will populate hidden inputs for cart items -->
+     <!--
     <div id="hidden-cart-inputs"></div>
 
     <div class="form-group">
@@ -99,6 +100,11 @@
 
     <button class="form-submit" type="submit">Send Request</button>
   </form>
+-->
+      <form id="checkout-form" action="/create-checkout-session" method="POST">
+        <input type="hidden" name="cart" id="cart-data">
+        <button type="submit">Checkout</button>
+      </form>
   <script src="{{ url_for('static', filename='js/Cart.js') }}"></script>
 </section>
 

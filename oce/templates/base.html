@@ -102,6 +102,11 @@
           </a></h5>
         </li>
         <li class="nav-item active">
+          <h5><a href="{{ url_for('content.signup') }}" class="nav-link">
+              Sign Up
+            </a></h5>
+        </li>
+        <li class="nav-item active">
           <h5><a href="{{ url_for('content.calendar')}}" class="nav-link">
               Calendar
             </a></h5>
@@ -116,16 +121,40 @@
               Shop
             </a> </h5>
         </li>
-        <li class="nav-item active" style="margin-left: auto;">
-          <a href = "{{ url_for('content.cart') }}" class="nav-link">
+        {% if logged_in_user %}
+          <li class="nav-item active" style="margin-left: 10px;">
+            <img
+              src="data:image/jpeg;base64,{{ logged_in_user.profile_pic | b64encode }}"
+              alt="Profile Picture"
+              class="rounded-circle"
+              width="40"
+              height="40"
+            />
+          </li>
+        {% endif %}
+        <li class="nav-item active" style="margin-left: auto; position: relative;">
+          <a href="{{ url_for('content.cart') }}" class="nav-link">
             <img src="{{ url_for('static', filename='images/ShoppingCart.png') }}" class="shopping-cart">
+            <span id="cart_count" class="cart-badge">0</span> <!-- This will be updated by JS -->
           </a>
         </li>
       </ul>
     </div>
     </div>
   </nav>
+<script>
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const count = cart.length;
+    const badge = document.getElementById("cart_count");
+    if (badge) {
+      badge.textContent = count;
+      badge.style.display = count > 0 ? "inline-block" : "none";
+    }
+  }
 
+  document.addEventListener("DOMContentLoaded", updateCartCount);
+</script>
   <hr>
 
   <div class="mt-3">

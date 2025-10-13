@@ -162,10 +162,24 @@
 
         let cart = [];
 
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const count = cart.length;
+            const badge = document.getElementById("cart_count");
+            if (badge) {
+            badge.textContent = count;
+            badge.style.display = count > 0 ? "inline-block" : "none";
+            }
+            document.getElementById("cart_count").textContent = count;
+        }
+
         function addToCart(product) {
             cart.push(product);
+            localStorage.setItem("cart", JSON.stringify(cart)); // Save updated cart
+            updateCartCount();
             console.log(cart); // Debug: Shows the cart items in the console
             alert(`${product.name} has been added to your cart!`);
+            
 }
 
 
@@ -200,7 +214,9 @@
         }
 
     localStorage.setItem("cart", JSON.stringify(cart)); // Save updated cart to localStorage
-    alert(`${product.name} has been added to the cart!`); // Confirmation message
+    //alert(`${product.name} has been added to the cart!`); // Confirmation message
+    location.reload(true);
+    
 }
 
 // Call the function to display products on page load

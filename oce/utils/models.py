@@ -19,6 +19,7 @@ class User(UserMixin):
         password: str,
         profile_pic: bytes,
         about_me: str,
+        datetime_created: str
     ):
         self.id = user_uuid
         self.user_uuid = user_uuid
@@ -27,6 +28,7 @@ class User(UserMixin):
         self.password = password
         self.profile_pic = profile_pic
         self.about_me = about_me
+        self.datetime_created = datetime_created
 
 
 @login_manager.user_loader

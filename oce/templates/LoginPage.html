@@ -50,18 +50,18 @@
                 {% endif %}
             {% endwith %}
 
-            <form name="LoginForm" action="" method="post" class="login-form">
+            <form name="LoginForm" action=""{{ url_for('content.login') }}"" method="post" class="login-form">
                 
                 <div class="mb-3">
-                    <label for="username" class="form-label">Username/Email:</label>
+                    <label for="email" class="form-label">Email:</label>
                     <input
-                        type="text"
+                        type="email"
                         class="form-control"
-                        id="username"
-                        name="username"
-                        placeholder="Enter your Username or Email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
                         required
-                        autocomplete="username"
+                        autocomplete="email"
                         aria-required="true"
                     />
                 </div>
