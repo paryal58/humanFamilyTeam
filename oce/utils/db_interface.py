@@ -5,7 +5,8 @@ Functions to interface to the database.
 import sqlite3 as sql
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, TypeAlias
+from typing import Any
+TypeAlias = type
 from uuid import uuid4 as create_uuid
 
 from flask import current_app, g
