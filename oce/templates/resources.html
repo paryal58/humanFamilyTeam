@@ -22,6 +22,16 @@
     .hidden {
       display: none;
     }
+    .error-message {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+    iframe {
+      width: 100%;
+      max-width: 900px;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -44,67 +54,90 @@
 
     <!-- All resource sections -->
     <div class="resource-content">
+      
+      <div class="navigate-button">
+        <h2 class="mb-3">Help Us Personalize Resources for Your Child</h2>
+        <select id="age-select" class="form-select">
+          <option value="" disabled selected hidden>Select your child's age group</option>
+          <option value="birth-18m">Birth – 18 Months</option>
+          <option value="18m-3">18 Months – 3 Years</option>
+          <option value="3-6">3 – 6 Years</option>
+          <option value="6-9">6 – 9 Years</option>
+          <option value="9-12">9 – 12 Years</option>
+          <option value="12-15">12 – 15 Years</option>
+          <option value="15-18">15 – 18 Years</option>
+        </select>
+        <button class="btn btn-primary mt-3" onclick="navigateToAgeGroup()">Go</button>
+        <div id="error-message" class="error-message">⚠️ Please select a valid age group before continuing.</div>
+        <div class="mb-4"></div>
+      </div>
+      
       {% if selected_age == 'birth-18m' %}
         <h2 class="mb-3">🌱 Birth – 18 Months: The Absorbing World of the Senses</h2>
         <p class="lead">During this tender beginning, babies are learning through every sound, sight, touch, and smell. They are building trust and connection. Every smile, song, and gentle routine teaches them that the world is safe and loving. Families help by offering warmth, calm voices, and consistency — because feeling secure is the first step toward curiosity.</p>
 
+        <!-- Instruction text -->
+        <p class="lead">
+          Please look for the age group of the child(ren) in your home. Mark the “H” circle for each of the items you already have in your home for each specific age group for each of your children. For example, if you have a five year old, look at each of the items in the column for the age group, “3 years old - six years old.” Check the “H” circle for each of the items you currently HAVE in your home. If you are in NEED of that specific item please check the “N” circle. (Items needed for every age group are listed in the left- hand column.)
+        </p>
+
+        <!-- Button to load the form -->
+        <button id="loadFormBtn" class="btn btn-success mb-3">Start Filling Checklist (Birth – 18 Months)</button>
+
+        <!-- Hidden form container -->
+        <div id="formContainer" class="hidden">
+          <iframe
+            src="https://docs.google.com/forms/d/e/1FAIpQLSc0eQoXCL_WsTiFBUn0UkfiQx3iy21LSuEC_AjXuS63TB_R5A/viewform?embedded=true"
+            style="width: 100%; max-width: 900px; height: 6222px;"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0">
+            Loading…
+          </iframe>
+        </div>
       {% elif selected_age == '18m-3' %}
         <h2 class="mb-3">🧩 18 Months – 3 Years Old: Independence Awakens</h2>
         <p class="lead">This is the “I can do it myself!” stage. Children are discovering movement, language, and willpower. They love to imitate and participate — pouring, wiping, helping, choosing. Each small act of independence is a giant leap in confidence. Families can support this by giving choices, using patient words, and celebrating effort more than perfection.</p>
-
       {% elif selected_age == '3-6' %}
         <h2 class="mb-3">🎨 3 – 6 Years Old: The Imaginative Explorer</h2>
         <p class="lead">Now the child’s imagination and coordination bloom together. They absorb language, order, and culture with remarkable ease. They learn best through purposeful play — building, sorting, singing, storytelling, and helping. Home and school become their shared learning world. Families can nurture this growth by creating calm spaces, reading aloud, and modeling kindness and respect.</p>
-
       {% elif selected_age == '6-9' %}
         <h2 class="mb-3">🔍 6 – 9 Years Old: The Age of Reason and Friendship</h2>
         <p class="lead">Children at this stage love to understand how things work and why rules exist. They form strong friendships and begin to see fairness and teamwork as part of learning. They thrive when adults encourage curiosity, problem-solving, and shared responsibility. This is the time to show them that learning can make life better for everyone.</p>
-
       {% elif selected_age == '9-12' %}
         <h2 class="mb-3">🌍 9 – 12 Years Old: The Expanding World</h2>
         <p class="lead">Older elementary students want to connect ideas — history, science, geography, and human stories. They start asking big questions about justice, courage, and contribution. They build empathy and enjoy real-world projects that make a difference. Families can support by inviting conversations, visiting new places, and recognizing children as valuable helpers in the home and community.</p>
-
       {% elif selected_age == '12-15' %}
         <h2 class="mb-3">💡 12 – 15 Years Old: The Emerging Voice</h2>
         <p class="lead">Early teens are discovering who they are and how they fit into society. They crave meaningful work and authentic trust from adults. Learning becomes powerful when it connects to real life — managing projects, serving others, or creating something useful. Encouragement, boundaries, and open communication help them turn challenges into resilience.</p>
-
       {% elif selected_age == '15-18' %}
         <h2 class="mb-3">🌟 15 – 18 Years Old: Purpose and Contribution</h2>
         <p class="lead">In this final window, young people are ready to apply what they’ve learned and to envision their place in the world. They begin shaping their future through creativity, service, and self-direction. Families and mentors can walk beside them — listening, guiding, and celebrating their growing independence — as they learn the joy of giving back and helping others thrive.</p>
-
-      {% elif selected_age == 'all' %}
-        <h2 class="mb-3">Here are the resources for children all age groups. Please share with families at your school.</h2>
-
-      {% else %}
-        <p class="lead">Please contact us at the phone number above.</p>
       {% endif %}
-
-      {% if selected_age %}
-      <p class="lead">Please look for the age group of the child(ren) in your home. Mark the “H” circle for each of the items you already have in your home for each specific age group for each of your children. For example, if you have a five year old, look at each of the items in the column for the age group, “3 years old - six years old.” Check the “H” circle for each of the items you currently HAVE in your home. If you are in NEED of that specific item please check the “N” circle. (Items needed for every age group are listed in the left- hand column.)</p>
-      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSd9YM1q7BS5jT_QZmqWpGEUMRQoUonhAMUUGpFDff-9bs6zNw/viewform?embedded=true" width="640" height="382" frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-      {% endif %}
-    </div>
-
-    <div class="navigate-button">
-      <label for="age-select" class="form-label">Wish to navigate to other age group?</label>
-      <select id="age-select" class="form-select">
-        <option value="birth-18m">Birth – 18 Months</option>
-        <option value="18m-3">18 Months – 3 Years</option>
-        <option value="3-6">3 – 6 Years</option>
-        <option value="6-9">6 – 9 Years</option>
-        <option value="9-12">9 – 12 Years</option>
-        <option value="12-15">12 – 15 Years</option>
-        <option value="15-18">15 – 18 Years</option>
-        <option value="all">All Age Groups</option>
-      </select>
-      <button class="btn btn-primary mt-3" onclick="navigateToAgeGroup()">Go</button>
     </div>
 
     <script>
       function navigateToAgeGroup() {
         const ageGroup = document.getElementById('age-select').value;
+        const errorMessage = document.getElementById('error-message');
+        if (!ageGroup || ageGroup === '') {
+          errorMessage.style.display = 'block';
+          return;
+        }
         window.location.href = `/content/resources/${ageGroup}`;
       }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const formBtn = document.getElementById('loadFormBtn');
+        const formContainer = document.getElementById('formContainer');
+        if (formBtn) {
+          formBtn.addEventListener('click', () => {
+            formContainer.classList.remove('hidden');
+            formBtn.style.display = 'none';
+            window.scrollTo({ top: formContainer.offsetTop - 80, behavior: 'smooth' });
+          });
+        }
+      });
     </script>
 
 </body>
