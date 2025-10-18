@@ -3,6 +3,7 @@ from flask import render_template
 from flask import session
 #from flask_limiter import Limiter
 #from flask_limiter.util import get_remote_address
+from oce.utils.db_interface import close_db
 
 app = create_app()
 #limiter = Limiter(get_remote_address, app=app)
@@ -31,3 +32,5 @@ def b64encode_filter(data):
     if isinstance(data, bytes):
         return base64.b64encode(data).decode('utf-8')
     return ''
+
+app.teardown_appcontext(close_db)
