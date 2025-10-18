@@ -34,3 +34,4 @@ pytz==2025.2
 flask_dance==7.1.0
 urllib3==1.26.16
 flask_session==0.8.0
+psycopg2-binary=2.9.11
