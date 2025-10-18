@@ -61,37 +61,37 @@ content.register_blueprint(github_blueprint, url_prefix='/github_login')
 #  return render_template('SignupPage.html')
 
 
-@content.route('/content/SignupPage', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        username = request.form.get('username', '').strip()
-        email = request.form.get('email', '').strip()
-        password = request.form.get('password', '').strip()
-        about_me = request.form.get('about_me', '').strip()
+# @content.route('/content/SignupPage', methods=['GET', 'POST'])
+# def signup():
+#     if request.method == 'POST':
+#         username = request.form.get('username', '').strip()
+#         email = request.form.get('email', '').strip()
+#         password = request.form.get('password', '').strip()
+#         about_me = request.form.get('about_me', '').strip()
 
-        # Basic validation
-        if not username or not email or not password:
-            flash("All fields are required.", "danger")
-            return redirect(url_for('content.signup'))
+#         # Basic validation
+#         if not username or not email or not password:
+#             flash("All fields are required.", "danger")
+#             return redirect(url_for('content.signup'))
 
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            flash("Invalid email format.", "danger")
-            return redirect(url_for('content.signup'))
+#         if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+#             flash("Invalid email format.", "danger")
+#             return redirect(url_for('content.signup'))
 
-        if get_user_by_email(email):
-            flash("Email already registered.", "warning")
-            return redirect(url_for('content.signup'))
+#         if get_user_by_email(email):
+#             flash("Email already registered.", "warning")
+#             return redirect(url_for('content.signup'))
 
-        try:
-            create_user(username=username, email=email, password=password, about_me=about_me)
-            flash("Signup successful! You can now log in.", "success")
-            return redirect(url_for('content.login'))
-        except Exception as e:
-            print(f"Signup error: {e}")
-            flash("An error occurred during signup.", "danger")
-            return redirect(url_for('content.signup'))
+#         try:
+#             create_user(username=username, email=email, password=password, about_me=about_me)
+#             flash("Signup successful! You can now log in.", "success")
+#             return redirect(url_for('content.login'))
+#         except Exception as e:
+#             print(f"Signup error: {e}")
+#             flash("An error occurred during signup.", "danger")
+#             return redirect(url_for('content.signup'))
 
-    return render_template('SignupPage.html')
+#     return render_template('SignupPage.html')
 
 @content.route('/content/success')
 def success():
@@ -378,3 +378,54 @@ def logout():
 def index():
     return render_template('index.html')
 
+
+
+@content.route('/content/SignupPage', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip().lower()  # Convert to lowercase for consistency
+        password = request.form.get('password', '').strip()
+        about_me = request.form.get('about_me', '').strip()
+
+        # Basic validation
+        if not username or not email or not password:
+            flash("All fields are required.", "danger")
+            return redirect(url_for('content.signup'))
+
+        # Validate email format
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            flash("Invalid email format.", "danger")
+            return redirect(url_for('content.signup'))
+
+        # Password strength validation (optional but recommended)
+        if len(password) < 8:
+            flash("Password must be at least 8 characters long.", "warning")
+            return redirect(url_for('content.signup'))
+
+        # Check if email already exists
+        if get_user_by_email(email):
+            flash("Email already registered. Please login instead.", "warning")
+            return redirect(url_for('content.login'))
+
+        try:
+            # CRITICAL: Hash the password with Argon2 before storing
+            hashed_password = password_hasher.hash(password)
+            
+            # Create user with hashed password
+            create_user(
+                username=username, 
+                email=email, 
+                password=hashed_password,  # Pass the HASHED password, not plain text!
+                about_me=about_me
+            )
+            
+            flash("Account created successfully! You can now log in.", "success")
+            return redirect(url_for('content.login'))
+            
+        except Exception as e:
+            print(f"Signup error: {e}")
+            flash("An error occurred during signup. Please try again.", "danger")
+            return redirect(url_for('content.signup'))
+
+    return render_template('SignupPage.html')

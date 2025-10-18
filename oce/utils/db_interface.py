@@ -5,8 +5,7 @@ Functions to interface to the database.
 import sqlite3 as sql
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Any
-TypeAlias = type
+from typing import Any, TypeAlias
 from uuid import uuid4 as create_uuid
 
 from flask import current_app, g
@@ -296,7 +295,7 @@ def delete_user(user: User) -> None:
 #     con.commit()
 
 
-#this is temorary, should be relpaced by the function above when the user acounts feature is added
+# This is temorary, should be relpaced by the function above when the user acounts feature is added
 def create_post(
     author: str,
     text_content: str,
