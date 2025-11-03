@@ -128,24 +128,67 @@
       </p>
       <iframe src="https://docs.google.com/forms/d/e/FORM_ID_7/viewform?embedded=true" height="5000"></iframe>
     </div>
-  </div>
+    <hr class="my-5" />
 
-  <script>
-    function showSection() {
-      const selected = document.getElementById("age-select").value;
-      const sections = document.getElementsByClassName("age-section");
-      const errorMessage = document.getElementById("error-message");
+<div class="mt-5">
+  <h2 class="mb-3">Are You a School Principal Who Wants to Create a Form for Your School?</h2>
+  <p class="lead">If you want to generate your own customized version of the checklist form for your school, please fill in the following fields:</p>
 
-      if (!selected) {
-        errorMessage.style.display = "block";
-        return;
+  <form id="schoolFormGenerator">
+    <div class="mb-3">
+      <label for="school-name" class="form-label">School Name</label>
+      <input type="text" class="form-control" id="school-name" name="school" required />
+    </div>
+    <div class="mb-3">
+      <label for="email-address" class="form-label">Your Gmail Address</label>
+      <input type="email" class="form-control" id="email-address" name="email" required />
+    </div>
+    <button type="submit" class="btn btn-success">Generate School Form</button>
+
+    <div id="form-success" class="text-success mt-3" style="display: none;">
+      ✅ Form generation request sent successfully. Please check your email.
+    </div>
+    <div id="form-error" class="text-danger mt-3" style="display: none;">
+      ❌ Failed to generate the form. Please try again later.
+    </div>
+  </form>
+</div>
+
+<script>
+  document.getElementById("schoolFormGenerator").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const school = document.getElementById("school-name").value.trim();
+    const email = document.getElementById("email-address").value.trim();
+    const successMsg = document.getElementById("form-success");
+    const errorMsg = document.getElementById("form-error");
+
+    // 重置提示状态
+    successMsg.style.display = "none";
+    errorMsg.style.display = "none";
+
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbx8iBD29uTVE9XX3sBHw0_HpukRR04ildwpCYbs5briEaNenErfAtgHsG8h9EZMaakf/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ school, email })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.status === "success") {
+        successMsg.style.display = "block";
+      } else {
+        throw new Error(result.message || "Unknown error");
       }
 
-      errorMessage.style.display = "none";
-      Array.from(sections).forEach((section) => section.classList.add("hidden"));
-      document.getElementById(selected).classList.remove("hidden");
-      document.getElementById(selected).scrollIntoView({ behavior: "smooth" });
+    } catch (error) {
+      console.error("Form generation failed:", error);
+      errorMsg.style.display = "block";
     }
-  </script>
+  });
+</script>
 </body>
 {% endblock %}
