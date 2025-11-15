@@ -10,6 +10,8 @@ import stripe
 import json
 import re
 from .. import password_hasher
+from flask_mail import Message
+from .. import mail #mail from _init_.py
 
 stripe.api_key = ''
 
@@ -20,7 +22,60 @@ PRODUCT_CATALOG = {
     2: {'name': 'Bully Booster 2', 'price': 500},
     3: {'name': 'Bully Booster 3', 'price': 500},
     4: {'name': 'Bully Booster 4', 'price': 500},
-    # Add more products as needed
+    5: {'name': 'Bully Booster 5', 'price': 500},
+    6: {'name': 'Bully Booster 6', 'price': 500},
+    7: {'name': 'Bully Booster 7', 'price': 500},
+    8: {'name': 'Bully Booster 8', 'price': 500},
+    9: {'name': 'Bully Booster 9', 'price': 500},
+    10: {'name': 'Action Cards Bundle 1', 'price': 500},
+    11: {'name': 'Action Cards Bundle 2', 'price': 500},
+    12: {'name': 'Action Cards Bundle 3', 'price': 500},
+    13: {'name': 'Action Cards Bundle 4', 'price': 500},
+    14: {'name': 'Action Cards Bundle 5', 'price': 500},
+    15: {'name': 'Action Cards Bundle 6', 'price': 500},
+    16: {'name': 'Learning Environment Card', 'price': 500},
+    17: {'name': 'Stability Card', 'price': 500},
+    18: {'name': 'Learning Energy Card', 'price': 500},
+    19: {'name': 'Perception Card', 'price': 500},
+    20: {'name': 'Responsibility Card', 'price': 500},
+    21: {'name': 'Ability Card', 'price': 500},
+    22: {'name': 'Discernment Card', 'price': 500},
+    23: {'name': 'Friendships Card', 'price': 500},
+    24: {'name': 'Resilience Card', 'price': 500},
+    25: {'name': 'Arts Face Card', 'price': 500},
+    26: {'name': 'Humanities Face Card', 'price': 500},
+    27: {'name': 'Sciences Face Card', 'price': 500},
+    28: {'name': 'Learning Environment Card', 'price': 500},
+    29: {'name': 'Stability Card', 'price': 500},
+    30: {'name': 'Learning Energy Card', 'price': 500},
+    31: {'name': 'Perception Card', 'price': 500},
+    32: {'name': 'Responsibility Card', 'price': 500},
+    33: {'name': 'Ability Card', 'price': 500},
+    34: {'name': 'Discernment Card', 'price': 500},
+    35: {'name': 'Friendships Card', 'price': 500},
+    36: {'name': 'Resilience Card', 'price': 500},
+    37: {'name': 'Distinguished Citizen', 'price': 500},
+    38: {'name': 'Zipper Pouch', 'price': 500},
+    39: {'name': 'Calendar', 'price': 500},
+    40: {'name': 'Character Equation Poster', 'price': 500},
+    41: {'name': 'Venn Diagram Poster', 'price': 500},
+    42: {'name': 'Scope & Sequence Poster', 'price': 500},
+    43: {'name': 'Problem Solvers Poster', 'price': 500},
+    44: {'name': 'Building Blocks Poster', 'price': 500},
+    45: {'name': 'Micro-credential Badges', 'price': 500},
+    46: {'name': 'Learning Environment Badge', 'price': 500},
+    47: {'name': 'Stability Badge', 'price': 500},
+    48: {'name': 'Learning Energy Badge', 'price': 500},
+    49: {'name': 'Perception Badge', 'price': 500},
+    50: {'name': 'Responsibility Badge', 'price': 500},
+    51: {'name': 'Ability Badge', 'price': 500},
+    52: {'name': 'Discernment Badge', 'price': 500},
+    53: {'name': 'Friendship Badge', 'price': 500},
+    54: {'name': 'Resilience Badge', 'price': 500},
+    55: {'name': 'Venn Diagram with Symbols', 'price': 500},
+    56: {'name': 'Scope & Sequence Customizable', 'price': 500},
+    57: {'name': 'Town Hall Lessons', 'price': 500},
+    58: {'name': 'Venn Diagram Wall Cling', 'price': 500},
 }
 
 class SessionStorage(BaseStorage):
@@ -218,37 +273,154 @@ def create_post_route():
         print(f"Error: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     
+ # Stripe webhook secret
+
+
+# ----------------------------
+# CREATE CHECKOUT SESSION
+# ----------------------------
 @content.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     cart_json = request.form.get('cart')
-    cart = json.loads(cart_json)
+    cart = json.loads(cart_json or "[]")
+
+    customer_email = request.form.get('email')  # From your checkout form
 
     line_items = []
-
     for item in cart:
         product = PRODUCT_CATALOG.get(item['id'])
         if product:
             line_items.append({
                 'price_data': {
                     'currency': 'usd',
-                    'product_data': {
-                        'name': product['name'],
-                    },
-                    'unit_amount': product['price'],
+                    'product_data': {'name': product['name']},
+                    'unit_amount': product['price'],  # in cents
                 },
                 'quantity': item['quantity'],
             })
 
     if not line_items:
         return "Invalid cart", 400
+    
+    # ----------------------------
+    # 💌 TEST EMAIL (before Stripe)
+    # ----------------------------
+    try:
+        msg = Message(
+            subject="Checkout Session Started",
+            recipients=["catronater@outlook.com"],  # send to yourself
+            body=f"Customer email: {customer_email}\n\nCart: {cart}"
+        )
+        mail.send(msg)
+        print(" Test email sent successfully before Stripe redirect!")
+    except Exception as e:
+        print(f" Mail send failed (before Stripe): {e}")
+
+    # ----------------------------
+    # STRIPE CHECKOUT SESSION
+    # ----------------------------
 
     session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
         line_items=line_items,
         mode='payment',
-        success_url='http://localhost:5000/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url='http://localhost:5000/',
+        customer_email=customer_email,  # Stripe sends receipt
+        success_url=url_for('content.success', _external=True) + '?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=url_for('content.index', _external=True),
+        shipping_address_collection={'allowed_countries': ['US', 'CA']},  # optional
     )
+    print("Checkout Made...")
     return redirect(session.url, code=303)
+
+
+# ----------------------------
+# STRIPE WEBHOOK
+# ----------------------------
+from flask import current_app
+
+@content.route("/webhook", methods=["POST"])
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get("Stripe-Signature")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError:
+        return "Invalid payload", 400
+    except stripe.error.SignatureVerificationError:
+        return "Invalid signature", 400
+
+    if event["type"] == "checkout.session.completed":
+        session_id = event["data"]["object"]["id"]
+
+        # Retrieve full session info, expanding customer and line_items
+        session = stripe.checkout.Session.retrieve(
+            session_id,
+            expand=["customer", "line_items"]
+        )
+
+        # ----------------------------
+        # Customer info
+        # ----------------------------
+        customer_details = session.get("customer_details", {})
+        customer_email = session.get("customer_email") or customer_details.get("email", "Unknown")
+        customer_name = customer_details.get("name", "Customer")
+
+        # ----------------------------
+        # Shipping info
+        # ----------------------------
+        shipping_info = "No shipping info provided."
+        shipping = customer_details.get("address")
+        if shipping:
+            lines = [
+                customer_name,
+                f"{shipping.get('line1', '')} {shipping.get('line2', '')}".strip(),
+                f"{shipping.get('city', '')}, {shipping.get('state', '')} {shipping.get('postal_code', '')}".strip(),
+                shipping.get("country", "")
+            ]
+            # Remove empty lines and join with newline
+            shipping_info = "\n".join(filter(None, lines))
+
+        # ----------------------------
+        # Order items
+        # ----------------------------
+        items_text = ""
+        line_items = session.get("line_items", {}).get("data", [])
+        for item in line_items:
+            items_text += f"{item.quantity} x {item.description} - ${item.amount_total / 100:.2f}\n"
+
+        # ----------------------------
+        # Send email
+        # ----------------------------
+        site_owner_email = 'catronater@outlook.com'
+        try:
+            msg_to_owner = Message(
+                subject="New Order Received",
+                recipients=[site_owner_email],
+                body=f"""
+New order received from {customer_name} ({customer_email}):
+
+Shipping Address:
+{shipping_info}
+
+Order Summary:
+{items_text}
+
+Please forward this to maggie@southlandprint.com
+"""
+            )
+            print("📨 Attempting to send email...")
+            with current_app.app_context():
+                mail.send(msg_to_owner)
+            print("✅ Email sent successfully!")
+        except Exception as e:
+            print(f"❌ Mail send failed: {e}")
+
+        return jsonify({"status": "success"})
+
+    return jsonify({"status": "ignored"})
 # @content.route('/github_login')
 # def github_login():
 #     if not github.authorized:
